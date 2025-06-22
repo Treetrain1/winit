@@ -21,6 +21,12 @@ use crate::event_loop::{ActiveEventLoop, EventLoop, EventLoopBuilder};
 use crate::monitor::MonitorHandle;
 use crate::window::{Window, WindowAttributes};
 
+macro_rules! os_error {
+    ($error:expr) => {{
+        winit_core::error::OsError::new(line!(), file!(), $error)
+    }};
+}
+
 pub use crate::window::Theme;
 
 /// Additional methods on [`ActiveEventLoop`] that are specific to Wayland.
@@ -128,4 +134,28 @@ impl MonitorHandleExtWayland for MonitorHandle {
     fn native_id(&self) -> u32 {
         self.inner.native_identifier()
     }
+}
+
+/// Converts an image buffer to a Wayland buffer (`wl_buffer`)
+fn image_to_buffer(
+    width: i32,
+    height: i32,
+    data: &[u8],
+    format: Format,
+    pool: &mut SlotPool,
+) -> Result<Buffer, CreateBufferError> {
+    let (buffer, canvas) = pool.create_buffer(width, height, 4 * width, format)?;
+
+    for (canvas_chunk, rgba) in canvas.chunks_exact_mut(4).zip(data.chunks_exact(4)) {
+        // Alpha in buffer is premultiplied.
+        let alpha = rgba[3] as f32 / 255.;
+        let r = (rgba[0] as f32 * alpha) as u32;
+        let g = (rgba[1] as f32 * alpha) as u32;
+        let b = (rgba[2] as f32 * alpha) as u32;
+        let color = ((rgba[3] as u32) << 24) + (r << 16) + (g << 8) + b;
+        let array: &mut [u8; 4] = canvas_chunk.try_into().unwrap();
+        *array = color.to_le_bytes();
+    }
+
+    Ok(buffer)
 }

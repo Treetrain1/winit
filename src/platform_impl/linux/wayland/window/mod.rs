@@ -116,6 +116,8 @@ impl Window {
             attributes.preferred_theme,
         );
 
+        window_state.set_window_icon(attributes.window_icon);
+
         // Set transparency hint.
         window_state.set_transparent(attributes.transparent);
 
@@ -417,7 +419,9 @@ impl Window {
     pub fn set_window_level(&self, _level: WindowLevel) {}
 
     #[inline]
-    pub(crate) fn set_window_icon(&self, _window_icon: Option<PlatformIcon>) {}
+    pub fn set_window_icon(&self, window_icon: Option<winit_core::icon::Icon>) {
+        self.window_state.lock().unwrap().set_window_icon(window_icon)
+    }
 
     #[inline]
     pub fn set_minimized(&self, minimized: bool) {
