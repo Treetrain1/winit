@@ -36,6 +36,7 @@ use crate::platform_impl::wayland::types::xdg_activation::XdgActivationState;
 use crate::platform_impl::wayland::window::{WindowRequests, WindowState};
 use crate::platform_impl::wayland::{WaylandError, WindowId};
 use crate::platform_impl::OsError;
+use crate::platform_impl::wayland::types::xdg_toplevel_icon_manager::XdgToplevelIconManagerState;
 
 /// Winit's Wayland state.
 pub struct WinitState {

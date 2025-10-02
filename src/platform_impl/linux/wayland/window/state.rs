@@ -21,6 +21,7 @@ use sctk::reexports::protocols::wp::viewporter::client::wp_viewport::WpViewport;
 use sctk::reexports::protocols::xdg::shell::client::xdg_toplevel::ResizeEdge as XdgResizeEdge;
 
 use sctk::compositor::{CompositorState, Region, SurfaceData, SurfaceDataExt};
+use sctk::globals::GlobalData;
 use sctk::seat::pointer::{PointerDataExt, ThemedPointer};
 use sctk::shell::xdg::window::{DecorationMode, Window, WindowConfigure};
 use sctk::shell::xdg::XdgSurface;
@@ -28,11 +29,13 @@ use sctk::shell::WaylandSurface;
 use sctk::shm::slot::SlotPool;
 use sctk::shm::Shm;
 use sctk::subcompositor::SubcompositorState;
+use wayland_protocols::xdg::toplevel_icon::v1::client::xdg_toplevel_icon_manager_v1::XdgToplevelIconManagerV1;
 use wayland_protocols_plasma::blur::client::org_kde_kwin_blur::OrgKdeKwinBlur;
 
 use crate::cursor::CustomCursor as RootCustomCursor;
 use crate::dpi::{LogicalPosition, LogicalSize, PhysicalPosition, PhysicalSize, Size};
 use crate::error::{ExternalError, NotSupportedError};
+use crate::icon;
 use crate::platform_impl::wayland::logical_to_physical_rounded;
 use crate::platform_impl::wayland::types::cursor::{CustomCursor, SelectedCursor};
 use crate::platform_impl::wayland::types::kwin_blur::KWinBlurManager;
@@ -43,6 +46,7 @@ use crate::platform_impl::wayland::seat::{
     PointerConstraintsState, WinitPointerData, WinitPointerDataExt, ZwpTextInputV3Ext,
 };
 use crate::platform_impl::wayland::state::{WindowCompositorUpdate, WinitState};
+use crate::platform_impl::wayland::types::xdg_toplevel_icon_manager::ToplevelIcon;
 
 #[cfg(feature = "sctk-adwaita")]
 pub type WinitFrame = sctk_adwaita::AdwaitaFrame<WinitState>;
@@ -1081,7 +1085,7 @@ impl WindowState {
     }
 
     /// Set the window's icon
-    pub fn set_window_icon(&mut self, window_icon: Option<winit_core::icon::Icon>) {
+    pub fn set_window_icon(&mut self, window_icon: Option<icon::Icon>) {
         let xdg_toplevel_icon_manager = match self.xdg_toplevel_icon_manager.as_ref() {
             Some(xdg_toplevel_icon_manager) => xdg_toplevel_icon_manager,
             None => {

@@ -16,7 +16,8 @@
 
 use std::ffi::c_void;
 use std::ptr::NonNull;
-
+use sctk::shm::slot::{Buffer, CreateBufferError, SlotPool};
+use wayland_client::protocol::wl_shm::Format;
 use crate::event_loop::{ActiveEventLoop, EventLoop, EventLoopBuilder};
 use crate::monitor::MonitorHandle;
 use crate::window::{Window, WindowAttributes};

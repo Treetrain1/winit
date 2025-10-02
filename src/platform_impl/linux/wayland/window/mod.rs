@@ -1,5 +1,6 @@
 //! The Wayland window.
 
+use crate::icon;
 use std::ffi::c_void;
 use std::ptr::NonNull;
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -419,7 +420,7 @@ impl Window {
     pub fn set_window_level(&self, _level: WindowLevel) {}
 
     #[inline]
-    pub fn set_window_icon(&self, window_icon: Option<winit_core::icon::Icon>) {
+    pub fn set_window_icon(&self, window_icon: Option<icon::Icon>) {
         self.window_state.lock().unwrap().set_window_icon(window_icon)
     }
 
