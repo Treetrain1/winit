@@ -27,16 +27,26 @@ pub struct CustomCursor {
 }
 
 impl CustomCursor {
-    pub(crate) fn new(pool: &mut SlotPool, image: &WaylandCustomCursor) -> Self {
-        let image = &image.0;
-        let buffer = image_to_buffer(
-            image.width() as i32,
-            image.height() as i32,
-            image.buffer(),
-            Format::Argb8888,
-            pool,
-        )
-        .unwrap();
+    pub(crate) fn new(pool: &mut SlotPool, image: &CursorImage) -> Self {
+        let (buffer, canvas) = pool
+            .create_buffer(
+                image.width as i32,
+                image.height as i32,
+                4 * (image.width as i32),
+                Format::Argb8888,
+            )
+            .unwrap();
+
+        for (canvas_chunk, rgba) in canvas.chunks_exact_mut(4).zip(image.rgba.chunks_exact(4)) {
+            // Alpha in buffer is premultiplied.
+            let alpha = rgba[3] as f32 / 255.;
+            let r = (rgba[0] as f32 * alpha) as u32;
+            let g = (rgba[1] as f32 * alpha) as u32;
+            let b = (rgba[2] as f32 * alpha) as u32;
+            let color = ((rgba[3] as u32) << 24) + (r << 16) + (g << 8) + b;
+            let array: &mut [u8; 4] = canvas_chunk.try_into().unwrap();
+            *array = color.to_le_bytes();
+        }
 
         CustomCursor {
             buffer,

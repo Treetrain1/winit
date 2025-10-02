@@ -38,6 +38,7 @@ use super::{ActiveEventLoop, WaylandError, WindowId};
 pub(crate) mod state;
 
 pub use state::WindowState;
+use crate::icon::RgbaIcon;
 
 /// The Wayland window.
 pub struct Window {
@@ -117,7 +118,7 @@ impl Window {
             attributes.preferred_theme,
         );
 
-        window_state.set_window_icon(attributes.window_icon);
+        window_state.set_window_icon(attributes.window_icon.map(|icon| icon.inner));
 
         // Set transparency hint.
         window_state.set_transparent(attributes.transparent);
@@ -420,7 +421,7 @@ impl Window {
     pub fn set_window_level(&self, _level: WindowLevel) {}
 
     #[inline]
-    pub fn set_window_icon(&self, window_icon: Option<icon::Icon>) {
+    pub fn set_window_icon(&self, window_icon: Option<PlatformIcon>) {
         self.window_state.lock().unwrap().set_window_icon(window_icon)
     }
 

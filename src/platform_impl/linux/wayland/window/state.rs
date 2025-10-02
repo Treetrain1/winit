@@ -36,10 +36,11 @@ use crate::cursor::CustomCursor as RootCustomCursor;
 use crate::dpi::{LogicalPosition, LogicalSize, PhysicalPosition, PhysicalSize, Size};
 use crate::error::{ExternalError, NotSupportedError};
 use crate::icon;
+use crate::icon::{Icon, RgbaIcon};
 use crate::platform_impl::wayland::logical_to_physical_rounded;
 use crate::platform_impl::wayland::types::cursor::{CustomCursor, SelectedCursor};
 use crate::platform_impl::wayland::types::kwin_blur::KWinBlurManager;
-use crate::platform_impl::{PlatformCustomCursor, WindowId};
+use crate::platform_impl::{PlatformCustomCursor, PlatformIcon, WindowId};
 use crate::window::{CursorGrabMode, CursorIcon, ImePurpose, ResizeDirection, Theme};
 
 use crate::platform_impl::wayland::seat::{
@@ -1085,7 +1086,7 @@ impl WindowState {
     }
 
     /// Set the window's icon
-    pub fn set_window_icon(&mut self, window_icon: Option<icon::Icon>) {
+    pub fn set_window_icon(&mut self, window_icon: Option<PlatformIcon>) {
         let xdg_toplevel_icon_manager = match self.xdg_toplevel_icon_manager.as_ref() {
             Some(xdg_toplevel_icon_manager) => xdg_toplevel_icon_manager,
             None => {

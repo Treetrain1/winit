@@ -18,6 +18,7 @@ use crate::dpi::{PhysicalPosition, PhysicalSize, Position, Size};
 use crate::error::{ExternalError, NotSupportedError, OsError as RootOsError};
 use crate::event::{Event, InnerSizeWriter, WindowEvent};
 use crate::event_loop::AsyncRequestSerial;
+use crate::icon::Icon;
 use crate::platform::x11::WindowType;
 use crate::platform_impl::x11::atoms::*;
 use crate::platform_impl::x11::{

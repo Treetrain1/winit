@@ -10,10 +10,10 @@ use wayland_client::protocol::wl_shm::Format;
 use wayland_client::{delegate_dispatch, Connection, Dispatch, Proxy, QueueHandle};
 use wayland_protocols::xdg::toplevel_icon::v1::client::xdg_toplevel_icon_manager_v1::XdgToplevelIconManagerV1;
 use wayland_protocols::xdg::toplevel_icon::v1::client::xdg_toplevel_icon_v1::XdgToplevelIconV1;
-use winit_core::icon::{Icon, RgbaIcon};
-
-use crate::image_to_buffer;
-use crate::state::WinitState;
+use crate::icon::Icon;
+use crate::platform::wayland::image_to_buffer;
+use crate::platform_impl::PlatformIcon;
+use crate::platform_impl::wayland::state::WinitState;
 
 #[derive(Debug)]
 pub struct XdgToplevelIconManagerState {
@@ -33,16 +33,11 @@ pub struct ToplevelIcon {
 }
 
 impl ToplevelIcon {
-    pub fn new(icon: Icon, pool: &mut SlotPool) -> Result<Self, ToplevelIconError> {
-        let icon = match icon.cast_ref::<RgbaIcon>() {
-            Some(icon) => icon,
-            None => return Err(ToplevelIconError::Unsupported),
-        };
-
+    pub fn new(icon: PlatformIcon, pool: &mut SlotPool) -> Result<Self, ToplevelIconError> {
         let buffer = image_to_buffer(
-            icon.width() as i32,
-            icon.height() as i32,
-            icon.buffer(),
+            icon.width as i32,
+            icon.height as i32,
+            &*icon.rgba,
             Format::Argb8888,
             pool,
         )

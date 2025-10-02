@@ -138,7 +138,7 @@ impl MonitorHandleExtWayland for MonitorHandle {
 }
 
 /// Converts an image buffer to a Wayland buffer (`wl_buffer`)
-fn image_to_buffer(
+pub(crate) fn image_to_buffer(
     width: i32,
     height: i32,
     data: &[u8],
