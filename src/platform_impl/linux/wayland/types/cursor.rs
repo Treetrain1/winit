@@ -4,7 +4,6 @@ use sctk::reexports::client::protocol::wl_shm::Format;
 use sctk::shm::slot::{Buffer, SlotPool};
 
 use crate::cursor::CursorImage;
-use crate::image_to_buffer;
 
 #[derive(Debug)]
 pub enum SelectedCursor {
